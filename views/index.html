@@ -6,9 +6,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title></title>
     <link href="css/style.css" rel="stylesheet" />
+    <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
   </head>
   <body>
-    Count {{.Count}}
+    <div id="form">{{ template "form" .Form }}</div>
+    {{ template "display" .Data }}
+    
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        document.body.addEventListener("htmx:beforeSwap", function(event) {
+          if (event.detail.xhr.status === 422) {
+            event.detail.shouldSwap = true
+            event.detail.isError = false
+          }
+        })
+      })
+          
+    </script>
+      
   </body>
 </html>
+{{ end }} 
+
+{{ block "form" . }}
+<form hx-swap="outerHTML" method="post" hx-post="contacts" >
+  <label for="name">Name</label>
+  <input type="text" name="name" placeholder="Name" 
+  {{ if .Values.name }} value="{{ .Values.name }}" {{ end }} 
+  />
+  <label for="email">Email</label>
+  <input type="email" name="email" placeholder="Email"
+  {{ if .Values.email }} value="{{ .Values.email }}" {{ end }}
+  />
+
+  <button type="submit">Submit</button>
+
+  {{ if .Errors.email }} 
+    <p style="color: red">{{ .Errors.email }}</p> 
+  {{ end }}
+</form>
 {{ end }}
+
+{{ block "display" . }}
+<div id="display">
+  <ul>
+    {{range .Contacts}}
+    <li>
+      <p>Name: {{ .Name }}</p>
+      <p>Email: {{ .Email }}</p>
+    </li>
+    {{end}}
+  </ul>
+</div>
+{{ end }}
+
