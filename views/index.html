@@ -9,9 +9,8 @@
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
   </head>
   <body>
-    <div id="form">{{ template "form" .Form }}</div>
-    {{ template "display" .Data }}
-    
+    {{ template "form" .Form }}
+    {{ template "contacts" .Data }}
 
     <script>
       document.addEventListener("DOMContentLoaded", function() {
@@ -30,7 +29,7 @@
 {{ end }} 
 
 {{ block "form" . }}
-<form hx-swap="outerHTML" method="post" hx-post="contacts" >
+<form hx-swap="outerHTML" hx-target="#contacts" hx-post="contacts" >
   <label for="name">Name</label>
   <input type="text" name="name" placeholder="Name" 
   {{ if .Values.name }} value="{{ .Values.name }}" {{ end }} 
@@ -48,8 +47,8 @@
 </form>
 {{ end }}
 
-{{ block "display" . }}
-<div id="display">
+{{ block "contacts" . }}
+<div id="contacts">
   <ul>
     {{range .Contacts}}
     <li>
