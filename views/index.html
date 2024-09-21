@@ -5,70 +5,99 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title></title>
-    <link href="css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/index.css" />
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
   </head>
   <body>
     {{ template "form" .Form }}
-    
+
     <ul>
       {{ template "contacts" .Data }}
     </ul>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        document.body.addEventListener("htmx:beforeSwap", function(event) {
+      document.addEventListener("DOMContentLoaded", function () {
+        document.body.addEventListener("htmx:beforeSwap", function (event) {
           if (event.detail.xhr.status === 422) {
-            event.detail.shouldSwap = true
-            event.detail.isError = false
+            event.detail.shouldSwap = true;
+            event.detail.isError = false;
           }
-        })
-      })
-          
+        });
+      });
     </script>
-      
   </body>
 </html>
 {{ end }} 
 
 {{ block "form" . }}
-<form hx-swap="outerHTML"  hx-post="contacts" >
+<form hx-swap="outerHTML" hx-post="contacts">
   <label for="name">Name</label>
-  <input type="text" name="name" placeholder="Name" 
-  {{ if .Values.name }} value="{{ .Values.name }}" {{ end }} 
+  <input
+    type="text"
+    name="name"
+    placeholder="Name"
+    {{
+    if
+    .Values.name
+    }}
+    value="{{ .Values.name }}"
+    {{
+    end
+    }}
   />
   <label for="email">Email</label>
-  <input type="email" name="email" placeholder="Email"
-  {{ if .Values.email }} value="{{ .Values.email }}" {{ end }}
+  <input
+    type="email"
+    name="email"
+    placeholder="Email"
+    {{
+    if
+    .Values.email
+    }}
+    value="{{ .Values.email }}"
+    {{
+    end
+    }}
   />
 
   <button type="submit">Submit</button>
 
-  {{ if .Errors.email }} 
-    <p style="color: red">{{ .Errors.email }}</p> 
+  {{ if .Errors.email }}
+  <p style="color: red">{{ .Errors.email }}</p>
   {{ end }}
 </form>
+{{ end }} {{ block "contacts" . }}
+<div id="contacts">{{range .Contacts}} {{ template "contact" . }} {{end}}</div>
 {{ end }}
-
-{{ block "contacts" . }}
-<div id="contacts">
-    {{range .Contacts}}
-      {{ template "contact" . }}
-    {{end}}
-</div>
-{{ end }}
-
 
 {{ block "contact" . }}
-<li>
-  <p>Name: {{ .Name }}</p>
-  <p>Email: {{ .Email }}</p>
+<li id="contact-{{ .Id }}">
+  <span>Name: {{ .Name }}</span>
+  <span>Email: {{ .Email }}</span>
+  <button hx-target="#contact-{{ .Id }}" hx-swap="outerHTML" hx-delete="/contacts/{{ .Id }}" class="delete-button">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="feather feather-trash-2"
+      viewBox="0 0 24 24"
+    >
+      <polyline points="3 6 5 6 21 6"></polyline>
+      <path
+        d="M19 6L5 6L6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19L19 6Z"
+      ></path>
+      <path d="M10 11L10 17"></path>
+      <path d="M14 11L14 17"></path>
+      <path d="M9 6L10 3H14L15 6"></path>
+    </svg>
+  </button>
 </li>
-{{ end}}
-
+{{ end}} 
 
 {{ block "oob-contact" . }}
-<div id="contacts" hx-swap-oob="afterbegin">
-  {{ template "contact" . }}
-</div>
+<div id="contacts" hx-swap-oob="afterbegin">{{ template "contact" . }}</div>
 {{ end }}
