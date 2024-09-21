@@ -10,7 +10,10 @@
   </head>
   <body>
     {{ template "form" .Form }}
-    {{ template "contacts" .Data }}
+    
+    <ul>
+      {{ template "contacts" .Data }}
+    </ul>
 
     <script>
       document.addEventListener("DOMContentLoaded", function() {
@@ -29,7 +32,7 @@
 {{ end }} 
 
 {{ block "form" . }}
-<form hx-swap="outerHTML" hx-target="#contacts" hx-post="contacts" >
+<form hx-swap="outerHTML"  hx-post="contacts" >
   <label for="name">Name</label>
   <input type="text" name="name" placeholder="Name" 
   {{ if .Values.name }} value="{{ .Values.name }}" {{ end }} 
@@ -49,14 +52,23 @@
 
 {{ block "contacts" . }}
 <div id="contacts">
-  <ul>
     {{range .Contacts}}
-    <li>
-      <p>Name: {{ .Name }}</p>
-      <p>Email: {{ .Email }}</p>
-    </li>
+      {{ template "contact" . }}
     {{end}}
-  </ul>
 </div>
 {{ end }}
 
+
+{{ block "contact" . }}
+<li>
+  <p>Name: {{ .Name }}</p>
+  <p>Email: {{ .Email }}</p>
+</li>
+{{ end}}
+
+
+{{ block "oob-contact" . }}
+<div id="contacts" hx-swap-oob="afterbegin">
+  {{ template "contact" . }}
+</div>
+{{ end }}
