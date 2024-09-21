@@ -12,3 +12,8 @@
 .delete-button {
   cursor: pointer;
 }
+
+.contact.htmx-swapping {
+  opacity: 0;
+  transition: opacity 500ms ease-in;  
+}
